@@ -25,7 +25,7 @@ Constraints:
 
 Logics:
       class Solution {
-    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         int index1 = 0;
     int index2 = 0;
     int med1 = 0;
