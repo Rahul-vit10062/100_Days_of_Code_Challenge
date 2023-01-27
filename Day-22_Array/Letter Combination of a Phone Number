@@ -1,1 +1,51 @@
 
+Question:-
+          Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+          A mapping of digits to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
+
+Test Case 1:
+          Input: digits = "23"
+          Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+Test Case 2:
+          Input: digits = ""
+          Output: []
+Test Case 3:
+          Input: digits = "2"
+          Output: ["a","b","c"]
+Constraints:
+          0 <= digits.length <= 4
+          digits[i] is a digit in the range ['2', '9'].
+          
+Logics:-
+          class Solution {
+    public List<String> letterCombinations(String digits) {
+    String[] str = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"}; 
+     StringBuffer store = new StringBuffer();
+     List<String> ans = new ArrayList<>();
+        if(digits.length()==0)
+            return ans;
+        
+        helper(0,digits,ans,store,str);
+        return ans;
+    }
+    
+    void helper(int i, String digits,List<String> ans,StringBuffer store,String[] str)
+    {
+        if(i==digits.length())
+        {
+            ans.add(store.toString());
+            return;
+        }
+    
+        int tempI = digits.charAt(i) - '0';
+        String tempS = str[tempI];
+        
+        for(int j=0; j<tempS.length(); j++)
+        {
+            char c = tempS.charAt(j);
+            store.append(c);
+            helper(i+1,digits,ans,store,str);
+            store.deleteCharAt(store.length()-1);
+        }
+    }
+}
