@@ -1,1 +1,41 @@
+Question:-
+            Given an integer n, return the number of prime numbers that are strictly less than n.
 
+ 
+
+Test Case 1:
+            Output: 4
+Explanation: 
+            There are 4 prime numbers less than 10, they are 2, 3, 5, 7.
+Test Case 2:
+`           Input: n = 0
+            Output: 0
+Test Case 3:
+            Input: n = 1
+            Output: 0
+ 
+
+Constraints:
+            0 <= n <= 5 * 106
+            
+Logics:-
+            class Solution {
+    public int countPrimes(int n) {
+     boolean[] isprime = new boolean[n];
+     int count = 0;
+        
+        for(int i = 2; i*i<=n; i++){
+            if(!isprime[i]){
+                    for(int j = i*2; j<n; j+=i){
+                        isprime[j] = true;
+                    }
+            }
+        }
+        for(int i=2;i<isprime.length;i++){
+            if(!isprime[i]){
+                count++;
+            }
+        }
+        return count;
+    }
+}
