@@ -1,1 +1,56 @@
+Question:-
+          Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
+Note:     You can only move either down or right at any point in time.
 
+Test Case 1:
+          Input: grid = [[1,3,1],[1,5,1],[4,2,1]]
+          Output: 7
+Explanation:
+          Because the path 1 → 3 → 1 → 1 → 1 minimizes the sum.
+Test Case 2:
+          Input: grid = [[1,2,3],[4,5,6]]
+          Output: 12
+Constraints:
+          m == grid.length
+          n == grid[i].length
+          1 <= m, n <= 200
+          0 <= grid[i][j] <= 100
+          
+Logics:-
+          class Solution {
+    public int minPathSum(int[][] grid) {
+    int r = grid.length, c = grid[0].length;
+        int countRows = 0, countCols = 0;
+        while (countRows < r || countCols < c) {
+            for (int i = 0; i < countRows; i++) {
+                insertMinSum(i, countCols, grid);
+            }
+            for (int i = 0; i < countCols; i++) {
+                insertMinSum(countRows, i, grid);
+            }
+
+            insertMinSum(countRows, countCols, grid);
+
+            countCols++;
+            countRows++;
+        }
+        return grid[r - 1][c - 1];
+    }
+
+    private void insertMinSum(int row, int col, int[][] grid) {
+        if (cellExists(row, col ,grid)) {
+            if (cellExists(row - 1, col, grid) && cellExists(row, col - 1, grid)) {
+                int val = grid[row][col];
+                grid[row][col] = Math.min(grid[row - 1][col] + val, grid[row][col - 1] + val);
+            } else if (cellExists(row - 1, col, grid)) {
+                grid[row][col] += grid[row - 1][col];
+            } else if (cellExists(row, col - 1, grid)) {
+                grid[row][col] += grid[row][col - 1];
+            }
+        }
+    }
+
+    private boolean cellExists(int row, int col, int[][] array) {
+        return (row <= array.length - 1 && row >= 0) && (col <= array[0].length - 1 && col >= 0);
+    }
+}
