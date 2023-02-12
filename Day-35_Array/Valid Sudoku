@@ -1,0 +1,162 @@
+class Solution {
+    public void solveSudoku(char[][] board) {
+        State state = new State(board);
+        state = solveSudoku(state);
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                board[i][j] = state.board[i][j];
+            }
+        }
+    }
+    State solveSudoku(State state) {
+
+        int[] bestMove = state.bestMove();
+        while (bestMove != null && bestMove[2] == 1) {
+            state.setNumber(bestMove[0], bestMove[1], bestMove[3]);
+            bestMove = state.bestMove();
+        }
+        if (bestMove!=null) {
+            //no single move => backtracking
+            for (int m = 0; m < bestMove[2]; m++) {
+                State newState = new State(state);
+                newState.setNumber(bestMove[0], bestMove[1], bestMove[3 + m]);
+                try {
+                    return solveSudoku(newState);
+                } catch (Exception e) {
+                }
+            }
+            //if we are here, all moves resulted to an invalid state
+            throw new IllegalArgumentException();
+        }
+        return state;
+    }
+
+    static class State {
+        int[][] allowedNumbers;
+        char[][] board;
+
+        State(char[][] board) {
+            this.board = board;
+            this.allowedNumbers = new int[board.length][board[0].length];
+
+            //init allowedNumbers with clues
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board.length; j++) {
+                    allowedNumbers[i][j] = 0b1111111110;
+                }
+            }
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board.length; j++) {
+                    char c = board[i][j];
+                    if (c != '.') {
+                        setNumber(i, j, c - '0');
+                    }
+                }
+            }
+
+        }
+
+        State(State state) {
+            this.board = new char[state.board.length][state.board.length];
+            this.allowedNumbers = new int[board.length][board[0].length];
+
+            //copy
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board.length; j++) {
+                    this.board[i][j] = state.board[i][j];
+                }
+            }
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board.length; j++) {
+                    this.allowedNumbers[i][j] = state.allowedNumbers[i][j];
+                }
+            }
+        }
+
+        void check(int i, int j) {
+            if(allowedNumbers[i][j]==0)
+                throw new IllegalArgumentException();
+        }
+
+        void setNumber(int i, int j, int v) {
+            int setmask=1<<v;
+            int unsetmask=~setmask;
+
+            //update allowed numbers
+
+            //this cell
+            allowedNumbers[i][j] &= setmask;
+
+            //in this 3x3 block
+            int oi = (i / 3) * 3, oj = (j / 3) * 3;
+            for (int bi = oi; bi < oi + 3; bi++) {
+                for (int bj = oj; bj < oj + 3; bj++) {
+                    if(bi!=i||bj!=j) {
+                        allowedNumbers[bi][bj] &= unsetmask;
+                        check(bi, bj);
+                    }
+                }
+            }
+
+            //in this row
+            for (int jj = 0; jj < allowedNumbers.length; jj++) {
+                if(jj!=j) {
+                    allowedNumbers[i][jj] &= unsetmask;
+                    check(i, jj);
+                }
+            }
+
+            //in this column
+            for (int ii = 0; ii < allowedNumbers.length; ii++) {
+                if(ii!=i) {
+                    allowedNumbers[ii][j] &= unsetmask;
+                    check(ii, j);
+                }
+            }
+
+            board[i][j] = (char) ('0' + v);
+        }
+
+
+        /**
+         * find out best move = position on board where allowed numbers is minimal
+         *
+         * @return array whose first element is row, second is column, third is allowed numbers count, next are the allowed numbers themselves (max 9)
+         */
+        int[] bestMove() {
+            int[] res = null;
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board.length; j++) {
+
+                    if (board[i][j] == '.') {
+                        int count = Integer.bitCount(allowedNumbers[i][j]);
+
+                        if(count>0) {
+
+                            if (res == null) {
+                                res = new int[]{-1, -1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+                            }
+                            if (count < res[2]) {
+                                res[0] = i;
+                                res[1] = j;
+                                res[2] = count;
+                                int c = 3;
+                                for (int n = 1; n <= 9; n++) {
+                                    if ((allowedNumbers[i][j] & (1<<n)) > 0)
+                                        res[c++] = n;
+                                }
+                            }
+                            if (count == 1) {
+                                return res;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            return res;
+        }
+
+    }
+}
