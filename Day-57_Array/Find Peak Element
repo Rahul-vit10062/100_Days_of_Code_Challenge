@@ -1,0 +1,36 @@
+Question:
+         A peak element is an element that is strictly greater than its neighbors.
+
+Given a 0-indexed integer array nums, find a peak element, and return its index. If the array contains multiple peaks, return the index to any of the peaks.
+
+You may imagine that nums[-1] = nums[n] = -∞. In other words, an element is always considered to be strictly greater than a neighbor that is outside the array.
+
+You must write an algorithm that runs in O(log n) time.
+
+ 
+                while(mp.size()==k){
+                    dif = store.get(store.size()-1)-store.get(0);
+                    if(dif<ans[1]-ans[0]){
+                        ans[0] = store.get(0);
+                        ans[1] = store.get(store.size()-1);
+                    }
+                    store.remove(0);
+                    int t = list.get(i).getValue();
+                    int vv = (int) mp.get(t);
+                    mp.put(t,vv-1);
+                    if(vv==1){
+                        mp.remove(t);
+                    }
+                    i++;
+                }
+                
+                j++;
+                
+            }
+   
+        }
+        
+        
+        return ans;
+    }
+}
