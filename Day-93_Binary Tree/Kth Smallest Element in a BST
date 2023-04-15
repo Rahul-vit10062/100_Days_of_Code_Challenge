@@ -1,0 +1,55 @@
+Question:
+          Given the root of a binary search tree, and an integer k, return the kth smallest value (1-indexed) of all the values of the nodes in the tree.
+          
+Test Case 1:
+          Input: root = [3,1,4,null,2], k = 1
+          Output: 1
+          
+Test Case 2:
+         Input: root = [5,3,6,2,4,null,null,1], k = 3
+          Output: 3
+
+Constraints:
+        The number of nodes in the tree is n.
+        1 <= k <= n <= 104
+        0 <= Node.val <= 104
+        
+Logics:
+       /**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+   public int kthSmallest(TreeNode root, int k) {
+    int [] ans  = new int [1];
+    int [] count = new int [1];
+    
+    Inorder(root, ans,count,k);
+    return ans[0];
+}
+
+public void Inorder(TreeNode root,int [] ans ,int[] count, int k){
+    if(root == null){
+        return ;
+    }
+    Inorder(root.left ,ans ,count ,k);
+    count[0]+=1 ;
+    if(count[0] == k){
+        ans[0] = root.val;
+        return ;
+    }
+    Inorder(root.right ,ans ,count ,k);
+    
+}
+}
