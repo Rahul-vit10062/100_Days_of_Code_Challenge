@@ -1,0 +1,76 @@
+Question:
+            There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+            For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+            Return true if you can finish all courses. Otherwise, return false.
+
+Test case 1:
+            Input: numCourses = 2, prerequisites = [[1,0]]
+            Output: true
+            Explanation: There are a total of 2 courses to take. 
+            To take course 1 you should have finished course 0. So it is possible.
+
+Test Case 2:
+            Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+            Output: false
+            Explanation: There are a total of 2 courses to take. 
+            To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+Constraints:
+            1 <= numCourses <= 2000
+            0 <= prerequisites.length <= 5000
+            prerequisites[i].length == 2
+            0 <= ai, bi < numCourses
+            All the pairs prerequisites[i] are unique.
+            
+ Logics:
+            class Solution {
+    private static final int VISITED = 1;
+    private static final int EXPLORING = -1;
+    private static final int UNVISITED = 0;
+    private Deque<Integer> stack;
+    private int[] nextCourseToVisit;
+    
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        int[] status = new int[numCourses];
+        stack = new ArrayDeque<>();
+        nextCourseToVisit = new int[numCourses];
+        Map<Integer, List<Integer>> graph = buildGraph(prerequisites);
+        
+        for (int course = 0; course < numCourses; course++) {
+            if (status[course] == UNVISITED && hasCycle(course, graph, status)) return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean hasCycle(int curCourse, Map<Integer, List<Integer>> graph, int[] status) {
+        stack.push(curCourse);
+        while (!stack.isEmpty()) {
+            curCourse = stack.peek();
+            status[curCourse] = EXPLORING;
+            List<Integer> coursesToVisit = graph.getOrDefault(curCourse, new ArrayList<>());
+            for (; nextCourseToVisit[curCourse] < coursesToVisit.size(); nextCourseToVisit[curCourse]++) {
+                int nextCourse = coursesToVisit.get(nextCourseToVisit[curCourse]);
+                if (status[nextCourse] == EXPLORING) return true;
+                if (status[nextCourse] == VISITED) continue;
+                stack.push(nextCourse);
+                break;
+            }
+            
+            if (nextCourseToVisit[curCourse] == coursesToVisit.size()) {
+                stack.pop();
+                status[curCourse] = VISITED;
+            }
+        }
+        
+        return false;
+    }
+    
+    private Map<Integer, List<Integer>> buildGraph(int[][] dependencies) {
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] dependency : dependencies) {
+            graph.computeIfAbsent(dependency[1], k->new ArrayList<>()).add(dependency[0]);
+        }
+        return graph;
+    }
+}
