@@ -1,0 +1,102 @@
+Question:
+          You are given a list of airline tickets where tickets[i] = [fromi, toi] represent the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it.
+          All of the tickets belong to a man who departs from "JFK", thus, the itinerary must begin with "JFK". If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string.
+          For example, the itinerary ["JFK", "LGA"] has a smaller lexical order than ["JFK", "LGB"].
+          You may assume all tickets form at least one valid itinerary. You must use all the tickets once and only once.
+
+Test case 1:
+          Input: tickets = [["MUC","LHR"],["JFK","MUC"],["SFO","SJC"],["LHR","SFO"]]
+          Output: ["JFK","MUC","LHR","SFO","SJC"]
+          
+Test case 2:
+          Input: tickets = [["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
+          Output: ["JFK","ATL","JFK","SFO","ATL","SFO"]
+          Explanation: Another possible reconstruction is ["JFK","SFO","ATL","JFK","ATL","SFO"] but it is larger in lexical order.
+
+Constraints:
+          1 <= tickets.length <= 300
+          tickets[i].length == 2
+          fromi.length == 3
+          toi.length == 3
+          fromi and toi consist of uppercase English letters.
+          fromi != toi
+          
+Logics:
+          class Solution {
+    // map: keys are starting airports and values are lists of destination airports
+    HashMap<String, LinkedList<String>> map;
+    // list of airports visited in order
+    LinkedList<String> result;
+    // given a list of tickets, returns the itinerary in the form of a list of airports visited
+    public List<String> findItinerary(List<List<String>> tickets) {
+        result = new LinkedList<>();
+        map = new HashMap<>();
+         // for each ticket, add the destination to the list of destinations for the ticket's starting airport
+        for (List<String> t : tickets) {
+            String src = t.get(0);
+            map.putIfAbsent(src, new LinkedList<>());
+            map.get(src).add(t.get(1));
+        }
+        // sort the lists of destinations so they are in lexicographic order
+        map.forEach((key, value) -> Collections.sort(value));
+        // start at JFK and find the itinerary using depth-first search
+        findItenaryDFS("JFK");
+        return result;
+    }
+    // finds the itinerary starting at the given airport using depth-first search
+    public void findItenaryDFS(String start){
+        if (map.containsKey(start)){
+            LinkedList<String> destination = map.get(start);
+            // for each destination, find the itinerary starting at that destination
+            while (!destination.isEmpty()) {
+                String des = destination.pollFirst();
+                findItenaryDFS(des);
+            }
+        }
+    // once there are no more destinations, add the current airport to the front of the result list
+        result.offerFirst(start);
+    }
+}
+
+// findItinerary(tickets)
+
+// 1. Create empty result list and map
+// 2. Add destinations to map for each ticket
+// 3. Sort destinations for each source airport
+// 4. Call findItenaryDFS("JFK")
+
+// findItenaryDFS("JFK")
+
+// 5. If JFK is in map:
+//     6. Get destinations for JFK from map
+//     7. While destinations is not empty:
+//         8. Remove first destination from list
+//         9. Call findItenaryDFS(first destination)
+// 10. Add JFK to front of result list
+// 11. Return
+
+// findItenaryDFS("ATL")
+
+// 5. If ATL is in map:
+//     6. Get destinations for ATL from map
+//     7. While destinations is not empty:
+//         8. Remove first destination from list
+//         9. Call findItenaryDFS(first destination)
+// 10. Add ATL to front of result list
+// 11. Return
+
+// findItenaryDFS("SFO")
+
+// 5. If SFO is in map:
+//     6. Get destinations for SFO from map
+//     7. While destinations is not empty:
+//         8. Remove first destination from list
+//         9. Call findItenaryDFS(first destination)
+// 10. Add SFO to front of result list
+// 11. Return
+
+// findItenaryDFS("SFO") returns
+// findItenaryDFS("ATL") returns
+// findItenaryDFS("JFK") returns
+
+// findItinerary(tickets) returns reversed result list
